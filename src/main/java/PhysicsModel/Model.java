@@ -4,8 +4,13 @@ import GUI.PhysicsGUI;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Model {
 
@@ -31,11 +36,8 @@ public class Model {
         atoms.add(a);
     }
 
-    public void start() throws InterruptedException {
-        while (true){
+    public void update() throws InterruptedException {
             updateGUIListener.updateGUI(this.atoms);
-
-            Thread.sleep(100);
 
                 for (int i = 0; i < atoms.size(); i++) {
                     Atom a = atoms.get(i);
@@ -45,34 +47,55 @@ public class Model {
                         int dx = a.x - b.x;
                         int dy = a.y - b.y;
                         int distance = (int) Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-
-                        if (distance > 80) {
+//                        System.out.println(distance);
+                        if (distance > 0 && distance < 80) {
                             int ruleG = this.rules.get(a.color).get(b.color);
                             double force = ((double) ruleG) / distance;
                             fx += force * dx;
                             fy += force * dy;
                         }
                     }
-                    a.vx = (int)(a.vx + fx);
-                    a.vy = (int)(a.vy + fy);
+                    a.vx = (int) ((a.vx + fx) * 0.5);
+                    a.vy = (int)((a.vy + fy) * 0.5);
                     a.x += a.vx;
                     a.y += a.vy;
 
-                    if (a.x < 0 || a.x > this.width){
-                        a.vx *= -1;
+                    if (a.x < 0){
+                        a.x = this.width - 1;
+                    }else if (a.x > this.width){
+                        a.x = 1;
                     }
-                    if (a.y < 0 || a.y > this.height){
-                        a.vy *= -1;
+                    if (a.y < 0){
+                        a.y = this.height - 1;
+                    }else if (a.y > this.height){
+                        a.y = 1;
                     }
-
-                    System.out.println(a);
-
                 }
         }
-    }
+
 
 
     public void addListener(Listener gui) {
         this.updateGUIListener = gui;
+    }
+
+    public void logStateToFile(String logPath) throws IOException {
+
+        BufferedWriter writer = new BufferedWriter(new FileWriter(logPath, false));
+
+        for (Map.Entry<Color, HashMap<Color, Integer>> entry : this.rules.entrySet()){
+            Color c1 = entry.getKey();
+
+            HashMap<Color, Integer> map = entry.getValue();
+
+            for (Map.Entry<Color, Integer> entry2 : map.entrySet()){
+                String write = "Rule " + c1.toString() + " -> " + entry2.getKey().toString() + " = " + entry2.getValue();
+                System.out.println(write);
+                writer.write(write);
+                writer.newLine();
+            }
+        }
+
+        writer.close();
     }
 }

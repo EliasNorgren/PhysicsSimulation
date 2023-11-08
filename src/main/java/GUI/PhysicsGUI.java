@@ -4,10 +4,8 @@ import PhysicsModel.Atom;
 import PhysicsModel.Listener;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Time;
 import java.util.ArrayList;
 
 public class PhysicsGUI extends JFrame implements Listener {
@@ -34,9 +32,10 @@ public class PhysicsGUI extends JFrame implements Listener {
     public void updateGUI(ArrayList<Atom> atoms) {
         this.panel.resetCircles();
         for (Atom a : atoms){
-            int radius = a.diameter / 2;
-            this.panel.addCircle(new CirclePanel.Circle(a.x - radius,a.y - radius,a.color,a.diameter));
+//            int radius = a.diameter / 2;
+            this.panel.addCircle(new CirclePanel.Circle(a.x,a.y,a.color,a.diameter));
         }
+        this.repaint();
     }
 
 

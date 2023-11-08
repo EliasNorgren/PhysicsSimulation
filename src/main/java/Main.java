@@ -3,41 +3,70 @@ import GUI.PhysicsGUI;
 import PhysicsModel.Atom;
 import PhysicsModel.Model;
 
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.security.PrivilegedExceptionAction;
+import java.util.HashSet;
+import java.util.Random;
 
 public class Main {
-    public static void main(String[] args) throws InterruptedException {
-        int width = 1000;
-        int height = 1000;
+    public static void main(String[] args) throws InterruptedException, IOException {
+        int width = 1870;
+        int height = 1050;
         Model model = new Model(width, height);
         PhysicsGUI gui = new PhysicsGUI(width, height);
         model.addListener(gui);
-        model.addAtom(new Atom(100, 500, 1, -1, 1, Color.red, 50));
-        model.addAtom(new Atom(100, 100, -1,1,1.5,Color.blue, 50));
-        model.addAtom(new Atom(300, 300, -1,1,1.5,Color.blue, 50));
-        model.addAtom(new Atom(600, 300, -1,1,1.5,Color.red, 50));
-        model.addAtom(new Atom(600, 300, -1,1,1.5,Color.green, 50));
-        model.addAtom(new Atom(600, 1000, -1,1,1.5,Color.green, 50));
+
+        Random rnd = new Random();
+
+        HashSet<Color> colors = new HashSet<>();
+        colors.add(Color.red);
+        colors.add(Color.green);
+        colors.add(Color.blue);
+        colors.add(Color.YELLOW);
+
+        int maxN = 3000;
+
+        for (Color c : colors){
+            for (int i = 0; i < rnd.nextInt(100, maxN); i++ ){
+                int x = rnd.nextInt(0, width);
+                int y = rnd.nextInt(0, height);
+                Atom a = new Atom(x,y, 0, 0, 0, c, 10);
+                model.addAtom(a);
+            }
+
+        }
+
+        int lowerG = -4;
+        int upperG = 4;
 
 
 
-        model.addRule(Color.red, Color.blue, 1);
-        model.addRule(Color.red, Color.red, 0);
-        model.addRule(Color.red, Color.green, -1);
+        for (Color c1 : colors){
+            for (Color c2 : colors){
+                int G = 0;
+                while(G == 0){
+                    G = rnd.nextInt(lowerG,upperG);
+                }
+                model.addRule(c1, c2, G);
+            }
+        }
 
 
-        model.addRule(Color.blue, Color.red, 1);
-        model.addRule(Color.blue, Color.blue, 0);
-        model.addRule(Color.blue, Color.green, -1);
+        model.logStateToFile("log");
 
-        model.addRule(Color.green, Color.red, 1);
-        model.addRule(Color.green, Color.blue, 1);
-        model.addRule(Color.green, Color.green, 1);
-
-
-
-        gui.startGUI(100);
-        model.start();
+        Timer t = new Timer(50, e -> {
+            try {
+                model.update();
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        t.start();
 
     }
 }
