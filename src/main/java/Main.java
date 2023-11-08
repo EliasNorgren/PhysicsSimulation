@@ -28,11 +28,14 @@ public class Main {
         colors.add(Color.green);
         colors.add(Color.blue);
         colors.add(Color.YELLOW);
+        colors.add(Color.MAGENTA);
+        colors.add(Color.ORANGE);
+        colors.add(Color.pink);
 
         int maxN = 3000;
 
         for (Color c : colors){
-            for (int i = 0; i < rnd.nextInt(100, maxN); i++ ){
+            for (int i = 0; i < rnd.nextInt(500, maxN); i++ ){
                 int x = rnd.nextInt(0, width);
                 int y = rnd.nextInt(0, height);
                 Atom a = new Atom(x,y, 0, 0, 0, c, 10);

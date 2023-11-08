@@ -21,6 +21,7 @@ public class Model {
     private final int width;
     private final int height;
 
+    private final int maxSpeed = 1;
 
     public Model(int width, int height) {
         this.width = width;
@@ -44,6 +45,9 @@ public class Model {
                     double fx = 0;
                     double fy = 0;
                     for (Atom b : atoms) {
+                        if (a == b){
+                            continue;
+                        }
                         int dx = a.x - b.x;
                         int dy = a.y - b.y;
                         int distance = (int) Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
@@ -55,8 +59,18 @@ public class Model {
                             fy += force * dy;
                         }
                     }
-                    a.vx = (int) ((a.vx + fx) * 0.5);
-                    a.vy = (int)((a.vy + fy) * 0.5);
+
+                    if (Math.abs(a.vx) > this.maxSpeed){
+                        a.vx = a.vx > 0 ? this.maxSpeed : this.maxSpeed * -1;
+                    }else{
+                        a.vx = (int) ((a.vx + fx) * 0.5);
+                    }
+                    if (Math.abs(a.vy) > this.maxSpeed){
+                        a.vy = a.vy > 0 ? this.maxSpeed : this.maxSpeed * -1;
+                    }else{
+                        a.vy = (int)((a.vy + fy) * 0.5);
+                    }
+
                     a.x += a.vx;
                     a.y += a.vy;
 
